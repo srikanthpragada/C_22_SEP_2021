@@ -11,7 +11,6 @@ void main()
     scanf("%d",&num);
 
     square = num * num;
-    printf("%d", square);
-
+    printf("%d",square);
 }
 
