@@ -1,4 +1,7 @@
 // Take 5 chars and display count of uppercase letters
+#include <stdio.h>
+#include <conio.h>
+#include <ctype.h>
 
 void main()
 {
