@@ -5,6 +5,8 @@ struct circle
     int x,y,radius;
 };
 
+typedef struct circle CIRCLE;
+
 int area(int r)
 {
     return  3.14 * r * r;
@@ -20,7 +22,7 @@ struct circle bigger(struct circle c1, struct circle c2)
     return c1.radius > c2.radius ? c1 : c2;
 }
 
-void print_circle(struct circle c)
+void print_circle(CIRCLE c)
 {
    printf("%2d, %2d  %2d\n", c.x,c.y, c.radius);
 }
