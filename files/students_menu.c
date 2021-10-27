@@ -1,7 +1,8 @@
-// Read one student's info from students.dat based on rollno
+// Menu to manage students.dat
 
 #include <stdio.h>
 #define FILENAME "students.dat"
+#define TEMPFILE "tempstudents.dat"
 
 struct student
 {
@@ -75,7 +76,7 @@ void list_students()
 
 void get_student()
 {
- FILE * fp;
+  FILE * fp;
   struct student s;
   int rollno,pos, count;
 
@@ -107,7 +108,81 @@ void get_student()
 }
 void update_student()
 {
+  FILE * fp;
+  struct student s;
+  int rollno,pos,count;
 
+     fp = fopen(FILENAME, "r+b");
+
+     while(1)
+     {
+         printf("Enter rollno [0 to stop] :");
+         scanf("%d",&rollno);
+
+         if (rollno == 0)
+            break;
+
+         pos = (rollno - 1) * sizeof(struct student);
+
+         fseek(fp, pos, SEEK_SET);  // Random access
+
+         // read from  file
+         count = fread(&s, sizeof(struct student), 1, fp);
+         if (count == 1)
+         {
+             printf("Enter marks :");
+             scanf("%d",&s.marks);
+             // Write student record back to file
+             fseek(fp, pos, SEEK_SET);
+             fwrite(&s,sizeof(struct student),1,fp);
+         }
+         else
+            printf("Sorry! Rollno not found!\n");
+     }
+
+     fclose(fp);
+
+}
+
+void delete_student()
+{
+   FILE * fp, *tfp;
+   struct student s;
+   int rollno,pos,count, found = 0;
+
+     fp = fopen(FILENAME, "rb");
+
+     printf("Enter rollno to delete  :");
+     scanf("%d",&rollno);
+
+     // create temp file
+     tfp = fopen(TEMPFILE,"wb");
+     pos = 1;
+     while (1)
+     {
+         count = fread(&s, sizeof(struct student), 1, fp);
+         if (count == 0)  // EOF
+            break;
+
+         if (rollno != pos)  // write if rollno is not to be deleted
+            fwrite(&s,sizeof(struct student),1,tfp);
+         else
+            found = 1;
+
+         pos ++;
+     }
+
+     fclose(fp);
+     fclose(tfp);
+
+     if(found)
+     {
+       remove(FILENAME);           // Delete original file
+       rename(TEMPFILE, FILENAME); // Rename temp file as original file
+       printf("\nDeleted Student with Rollno : %d\n",rollno);
+     }
+     else
+       printf("\nSorry! Did not find Student with Rollno : %d\n",rollno);
 
 }
 
@@ -123,18 +198,19 @@ void main()
           printf("2.List Students\n");
           printf("3.Get Student\n");
           printf("4.Update Marks\n");
-          printf("5.Quit\n");
+          printf("5.Delete Student by Rollno\n");
+          printf("6.Quit\n");
           printf("Choice :");
           scanf("%d",&choice);
 
           switch(choice)
           {
-
               case 1 : add_students(); break;
               case 2 : list_students(); break;
               case 3 : get_student(); break;
               case 4 : update_student(); break;
-              case 5 : exit(0);
+              case 5 : delete_student(); break;
+              case 6 : exit(0);
           }
       }
 }
